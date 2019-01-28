@@ -1,44 +1,48 @@
 const Supermarket = require('../models/supermarketModel')
 
-exports.list = function(req, res) {
-  Supermarket.find({}, function(err, msg) {
+exports.list = (req, res) => {
+  Supermarket.find({}, (err, supermarket) => {
     if (err)
       res.send(err)
-    res.json(msg)
+    res.json(supermarket)
   })
 }
 
-exports.create = function(req, res) {
+exports.create = (req, res) => {
   var supermarket = new Supermarket(req.body)
-  supermarket.save(function(err, msg) {
+  supermarket.save((err, supermarket) => {
   if (err)
     res.send(err)
-  res.json(msg)
+  res.json(supermarket)
   })
 }
 
-exports.read = function(req, res) {
-  Supermarket.findById(req.params.id, function(err, msg) {
+exports.read = (req, res) => {
+  Supermarket.findById(req.params.id, (err, supermarket) => {
   if (err)
     res.send(err)
-  res.json(msg)
+  res.json(supermarket)
   })
 }
 
-exports.update = function(req, res) {
-  Supermarket.findOneAndUpdate({_id: req.params.id}, req.body, {new: true}, function(err, msg) {
-  if (err)
-    res.send(err)
-  res.json(msg)
+exports.update = (req, res) => {
+  Supermarket.findOneAndUpdate({
+    _id: req.params.id}, 
+    req.body, 
+    {new: true}, 
+    (err, supermarket) => {
+      if (err)
+        res.send(err)
+      res.json(supermarket)
   })
 }
 
-exports.delete = function(req, res) {
+exports.delete = (req, res) => {
   Supermarket.deleteOne({
      _id: req.params.id
-  }, function(err, msg) {
+  }, (err, supermarket) => {
   if (err)
     res.send(err)
-  res.json({ message: 'Supermercado removido com sucesso' })
+  res.json(supermarket)
   })
 }
