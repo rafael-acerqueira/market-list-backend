@@ -4,7 +4,7 @@ module.exports = function (app) {
 
   const router = express.Router()
   app.use('/api', router)
-  
+
   var supermarkets = require('../api/controllers/supermarketsController')
   router.get('/supermarkets', supermarkets.list)
   router.post('/supermarkets', supermarkets.create)
@@ -31,5 +31,5 @@ module.exports = function (app) {
   router.post('/shopping-lists', shoppingLists.create)
   router.get('/shopping-lists/:id', shoppingLists.read)
   router.put('/shopping-lists/:id', shoppingLists.update)
-  router.delete('/shopping-lists/:id', shoppingLists.delete)    
+  router.delete('/shopping-lists/:id', shoppingLists.delete)
 }
