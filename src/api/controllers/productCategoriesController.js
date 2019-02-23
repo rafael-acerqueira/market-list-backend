@@ -1,4 +1,6 @@
+var ObjectId = require('mongoose').Types.ObjectId
 const ProductCategory = require('../models/productCategoryModel')
+const Product = require('../models/productModel')
 
 exports.list = (req, res) => {
   ProductCategory.find({}, (err, productCategory) => {
@@ -38,6 +40,7 @@ exports.update = (req, res) => {
 }
 
 exports.delete = (req, res) => {
+  Product.find({ productCategory: new ObjectId(req.params.id) }).remove().exec()
   ProductCategory.deleteOne({ _id: req.params.id }, (err, productCategory) => {
     if(err)
       res.send(err)
