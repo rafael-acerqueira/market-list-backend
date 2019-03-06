@@ -21,10 +21,12 @@ module.exports = function (app) {
 
   var products = require('../api/controllers/productsController')
   router.get('/product-categories/:categoryId/products', products.list)
+  router.get('/products', products.list)
   router.post('/product-categories/:categoryId/products', products.create)
   router.get('/products/:id', products.read)
+  router.get('/products/:term/search', products.search)
   router.put('/products/:id', products.update)
-  router.delete('/products/:id', products.delete)    
+  router.delete('/products/:id', products.delete)
 
   var shoppingLists = require('../api/controllers/shoppingListsController')
   router.get('/shopping-lists', shoppingLists.list)

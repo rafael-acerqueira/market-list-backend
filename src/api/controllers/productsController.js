@@ -1,7 +1,8 @@
 const Product = require('../models/productModel')
 
 exports.list = (req, res) => {
-  Product.find({ productCategory: req.params.categoryId }, (err, product) => {
+  const params = req.params.categoryId ? { productCategory: req.params.categoryId } : {}
+  Product.find(params, (err, product) => {
     if(err)
       res.send(err)
     res.json(product)  
@@ -39,6 +40,15 @@ exports.update = (req, res) => {
 
 exports.delete = (req, res) => {
   Product.deleteOne({ _id: req.params.id }, (err, product) => {
+    if(err)
+      res.send(err)
+    res.json(product)  
+  })
+}
+
+exports.search = (req, res) => {
+  const regex = new RegExp(req.params.term, "i")
+  Product.find({ name: regex }, (err, product) => {
     if(err)
       res.send(err)
     res.json(product)  
