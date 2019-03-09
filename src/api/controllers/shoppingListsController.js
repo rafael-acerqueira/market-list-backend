@@ -27,7 +27,12 @@ exports.read = (req, res) => {
     await Promise.all(shoppingListJSON.items.map(async element => {
       let product = await Product.findById(element.product)
       const productJSON = JSON.parse(JSON.stringify(product))
-      list.push({product: productJSON.name, quantity: element.quantity, value: element.value})
+      list.push({
+        product: productJSON.name,
+        quantity: element.quantity,
+        value: element.value,
+        found: element.found
+      })
     }))
     shoppingListJSON.items = list
     res.json(shoppingListJSON)

@@ -8,7 +8,8 @@ var ShoppingListItem = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
     required: true
-  }  
+  },
+  found: { type: Boolean, default: false, required: true }
 })
 
 module.exports = mongoose.model('ShoppingListItem', ShoppingListItem)
