@@ -9,6 +9,7 @@ var ShoppingList = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Supermarket'
   },
+  done: { type: Boolean, default: false, required: true },
   items: [ShoppingListItem.schema]
 },
   { timestamps: { createdAt: 'createdDate',updatedAt: 'updatedDate' }}
