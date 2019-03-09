@@ -1,4 +1,5 @@
 const ShoppingList = require('../models/shoppingListModel')
+const Product = require('../models/productModel')
 
 exports.list = (req, res) => {
   ShoppingList.find({}, (err, shoppingList) => {
@@ -18,10 +19,18 @@ exports.create = (req, res) => {
 }
 
 exports.read = (req, res) => {
-  ShoppingList.findById(req.params.id, (err, shoppingList) => {
+  ShoppingList.findById(req.params.id, async (err, shoppingList) => {
     if(err)
       res.send(err)
-    res.json(shoppingList)  
+    const shoppingListJSON = JSON.parse(JSON.stringify(shoppingList))
+    const list = []
+    await Promise.all(shoppingListJSON.items.map(async element => {
+      let product = await Product.findById(element.product)
+      const productJSON = JSON.parse(JSON.stringify(product))
+      list.push({product: productJSON.name, quantity: element.quantity, value: element.value})
+    }))
+    shoppingListJSON.items = list
+    res.json(shoppingListJSON)
   })
 }
 
