@@ -28,7 +28,8 @@ exports.read = (req, res) => {
       let product = await Product.findById(element.product)
       const productJSON = JSON.parse(JSON.stringify(product))
       list.push({
-        product: productJSON.name,
+        product: productJSON._id,
+        productName: productJSON.name,
         quantity: element.quantity,
         value: element.value,
         found: element.found
