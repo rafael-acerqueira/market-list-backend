@@ -34,4 +34,5 @@ module.exports = function (app) {
   router.get('/shopping-lists/:id', shoppingLists.read)
   router.put('/shopping-lists/:id', shoppingLists.update)
   router.delete('/shopping-lists/:id', shoppingLists.delete)
+  router.get('/shopping-lists/:month/purchase-quantity', shoppingLists.purchasesThisMonth)
 }

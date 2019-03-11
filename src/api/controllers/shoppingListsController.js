@@ -59,3 +59,20 @@ exports.delete = (req, res) => {
     res.json(shoppingList)  
   })
 }
+
+exports.purchasesThisMonth = (req, res) => {  
+  ShoppingList.aggregate([
+    { $addFields: {  "month" : { $month: '$date' } } },
+    { $match: { $and:
+      [
+        { month: { $eq: +req.params.month } },
+        { done: { $eq: true } }
+      ]
+    }},
+    { $count: "purchasesThisMonth"}
+  ], (err, list) => {
+    if(err)
+      res.send(err)
+    res.json(list[0] || {"purchasesThisMonth": 0 })
+  })
+}
