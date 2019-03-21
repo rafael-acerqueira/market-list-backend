@@ -1,6 +1,28 @@
 const ShoppingList = require('../models/shoppingListModel')
 const Product = require('../models/productModel')
 
+const compareByProductName = (a, b) => (a.productName < b.productName) ? -1 : (a.productName > b.productName) ? 1 : 0
+
+const formatItems = async (shoppingList) => {
+  const shoppingListJSON = JSON.parse(JSON.stringify(shoppingList))
+  const list = []
+  await Promise.all(shoppingListJSON.items.map(async element => {
+    let product = await Product.findById(element.product)
+    const productJSON = JSON.parse(JSON.stringify(product))
+    list.push({
+      _id: element._id,
+      product: productJSON._id,
+      productName: productJSON.name,
+      quantity: element.quantity,
+      value: element.value,
+      found: element.found
+    })
+  }))
+  shoppingListJSON.items = list.sort(compareByProductName)
+  
+  return shoppingListJSON
+}
+
 exports.list = (req, res) => {
   ShoppingList.find({}, (err, shoppingList) => {
     if(err)
@@ -22,21 +44,7 @@ exports.read = (req, res) => {
   ShoppingList.findById(req.params.id, async (err, shoppingList) => {
     if(err)
       res.send(err)
-    const shoppingListJSON = JSON.parse(JSON.stringify(shoppingList))
-    const list = []
-    await Promise.all(shoppingListJSON.items.map(async element => {
-      let product = await Product.findById(element.product)
-      const productJSON = JSON.parse(JSON.stringify(product))
-      list.push({
-        product: productJSON._id,
-        productName: productJSON.name,
-        quantity: element.quantity,
-        value: element.value,
-        found: element.found
-      })
-    }))
-    shoppingListJSON.items = list
-    res.json(shoppingListJSON)
+    res.json(await formatItems(shoppingList))
   })
 }
 
@@ -48,22 +56,8 @@ exports.update = (req, res) => {
     async (err, shoppingList) => {
       if(err)
         res.send(err)
-      const shoppingListJSON = JSON.parse(JSON.stringify(shoppingList))
-      const list = []
-      await Promise.all(shoppingListJSON.items.map(async element => {
-        let product = await Product.findById(element.product)
-        const productJSON = JSON.parse(JSON.stringify(product))
-        list.push({
-          _id: element._id,
-          product: productJSON._id,
-          productName: productJSON.name,
-          quantity: element.quantity,
-          value: element.value,
-          found: element.found
-        })
-      }))
-      shoppingListJSON.items = list
-      res.json(shoppingListJSON)
+
+      res.json(await formatItems(shoppingList))
     })
 }
 
@@ -79,22 +73,8 @@ exports.nextBuy = (req, res) => {
   ShoppingList.findOne({ done: false }, async (err, shoppingList) => {
     if(err)
       res.send(err)
-    const shoppingListJSON = JSON.parse(JSON.stringify(shoppingList))
-    const list = []
-    await Promise.all(shoppingListJSON.items.map(async element => {
-      let product = await Product.findById(element.product)
-      const productJSON = JSON.parse(JSON.stringify(product))
-      list.push({
-        _id: element._id,
-        product: productJSON._id,
-        productName: productJSON.name,
-        quantity: element.quantity,
-        value: element.value,
-        found: element.found
-      })
-    }))
-    shoppingListJSON.items = list
-    res.json(shoppingListJSON)
+
+    res.json(await formatItems(shoppingList))
   }).sort('-date')
 }
 
@@ -105,22 +85,7 @@ exports.maskItemAsFound = (req, res) => {
     item.set({found})
     
     shoppingList.save().then( async savedShoppingList => {
-      const shoppingListJSON = JSON.parse(JSON.stringify(savedShoppingList))
-      const list = []
-      await Promise.all(shoppingListJSON.items.map(async element => {
-        let product = await Product.findById(element.product)
-        const productJSON = JSON.parse(JSON.stringify(product))
-        list.push({
-          _id: element._id,
-          product: productJSON._id,
-          productName: productJSON.name,
-          quantity: element.quantity,
-          value: element.value,
-          found: element.found
-        })
-      }))
-      shoppingListJSON.items = list
-      res.send(shoppingListJSON)
+      res.json(await formatItems(savedShoppingList))
     }).catch( err => {
       res.status(500).send(err)
     })
