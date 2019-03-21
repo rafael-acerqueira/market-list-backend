@@ -35,6 +35,7 @@ module.exports = function (app) {
   router.get('/shopping-lists/:id', shoppingLists.read)
   router.put('/shopping-lists/:id', shoppingLists.update)
   router.put('/shopping-lists/:id/items/:item_id', shoppingLists.maskItemAsFound)
+  router.put('/shopping-lists/:id/items/:item_id/changeItemValue', shoppingLists.changeItemValue)
   router.delete('/shopping-lists/:id', shoppingLists.delete)
   router.get('/shopping-lists/:month/purchase-quantity', shoppingLists.purchasesThisMonth)
   router.get('/shopping-lists/:month/total-value', shoppingLists.totalValueThisMonth)

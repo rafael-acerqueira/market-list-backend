@@ -92,6 +92,19 @@ exports.maskItemAsFound = (req, res) => {
   })
 }
 
+exports.changeItemValue = (req, res) => {
+  ShoppingList.findById( req.params.id, async (err, shoppingList) => {
+    const item = shoppingList.items.id(req.params.item_id)
+    item.set(req.body)
+    
+    shoppingList.save().then( async savedShoppingList => {
+      res.json(await formatItems(savedShoppingList))
+    }).catch( err => {
+      res.status(500).send(err)
+    })
+  }) 
+}
+
 exports.purchasesThisMonth = (req, res) => {  
   ShoppingList.aggregate([
     { $addFields: {  "month" : { $month: '$date' } } },
