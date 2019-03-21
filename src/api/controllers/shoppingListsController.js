@@ -45,11 +45,26 @@ exports.update = (req, res) => {
     _id: req.params.id}, 
     req.body, 
     {new:true}, 
-    (err, shoppingList) => {
+    async (err, shoppingList) => {
       if(err)
         res.send(err)
-      res.json(shoppingList)  
-  })
+      const shoppingListJSON = JSON.parse(JSON.stringify(shoppingList))
+      const list = []
+      await Promise.all(shoppingListJSON.items.map(async element => {
+        let product = await Product.findById(element.product)
+        const productJSON = JSON.parse(JSON.stringify(product))
+        list.push({
+          _id: element._id,
+          product: productJSON._id,
+          productName: productJSON.name,
+          quantity: element.quantity,
+          value: element.value,
+          found: element.found
+        })
+      }))
+      shoppingListJSON.items = list
+      res.json(shoppingListJSON)
+    })
 }
 
 exports.delete = (req, res) => {
@@ -57,6 +72,58 @@ exports.delete = (req, res) => {
     if(err)
       res.send(err)
     res.json(shoppingList)  
+  })
+}
+
+exports.nextBuy = (req, res) => {
+  ShoppingList.findOne({ done: false }, async (err, shoppingList) => {
+    if(err)
+      res.send(err)
+    const shoppingListJSON = JSON.parse(JSON.stringify(shoppingList))
+    const list = []
+    await Promise.all(shoppingListJSON.items.map(async element => {
+      let product = await Product.findById(element.product)
+      const productJSON = JSON.parse(JSON.stringify(product))
+      list.push({
+        _id: element._id,
+        product: productJSON._id,
+        productName: productJSON.name,
+        quantity: element.quantity,
+        value: element.value,
+        found: element.found
+      })
+    }))
+    shoppingListJSON.items = list
+    res.json(shoppingListJSON)
+  }).sort('-date')
+}
+
+exports.maskItemAsFound = (req, res) => {
+  ShoppingList.findById( req.params.id, async (err, shoppingList) => {
+    const item = shoppingList.items.id(req.params.item_id)    
+    const found = !item.found
+    item.set({found})
+    
+    shoppingList.save().then( async savedShoppingList => {
+      const shoppingListJSON = JSON.parse(JSON.stringify(savedShoppingList))
+      const list = []
+      await Promise.all(shoppingListJSON.items.map(async element => {
+        let product = await Product.findById(element.product)
+        const productJSON = JSON.parse(JSON.stringify(product))
+        list.push({
+          _id: element._id,
+          product: productJSON._id,
+          productName: productJSON.name,
+          quantity: element.quantity,
+          value: element.value,
+          found: element.found
+        })
+      }))
+      shoppingListJSON.items = list
+      res.send(shoppingListJSON)
+    }).catch( err => {
+      res.status(500).send(err)
+    })
   })
 }
 
@@ -74,5 +141,18 @@ exports.purchasesThisMonth = (req, res) => {
     if(err)
       res.send(err)
     res.json(list[0] || {"purchasesThisMonth": 0 })
+  })
+}
+
+
+exports.totalValueThisMonth = (req, res) => {  
+  ShoppingList.aggregate([
+    { $project: { total: { $sum: "$items.value" } } },
+    { $group: { _id: null, total: { $sum: "$total" } } },
+    { $project: {_id: 0, total: 1 } }
+  ], (err, list) => {
+    if(err)
+      res.send(err)
+    console.log(list)
   })
 }

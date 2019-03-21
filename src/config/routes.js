@@ -31,8 +31,11 @@ module.exports = function (app) {
   var shoppingLists = require('../api/controllers/shoppingListsController')
   router.get('/shopping-lists', shoppingLists.list)
   router.post('/shopping-lists', shoppingLists.create)
+  router.get('/shopping-lists/nextBuy', shoppingLists.nextBuy)
   router.get('/shopping-lists/:id', shoppingLists.read)
   router.put('/shopping-lists/:id', shoppingLists.update)
+  router.put('/shopping-lists/:id/items/:item_id', shoppingLists.maskItemAsFound)
   router.delete('/shopping-lists/:id', shoppingLists.delete)
   router.get('/shopping-lists/:month/purchase-quantity', shoppingLists.purchasesThisMonth)
+  router.get('/shopping-lists/:month/total-value', shoppingLists.totalValueThisMonth)
 }
