@@ -125,12 +125,18 @@ exports.purchasesThisMonth = (req, res) => {
 
 exports.totalValueThisMonth = (req, res) => {  
   ShoppingList.aggregate([
-    { $project: { total: { $sum: "$items.value" } } },
+    { $project: { total: { $sum: "$items.value" }, month: { $month: '$date'}, done: '$done' } },
+    { $match: { $and:
+      [
+        { month: { $eq: +req.params.month } },
+        { done: { $eq: true } }
+      ]
+    }},
     { $group: { _id: null, total: { $sum: "$total" } } },
-    { $project: {_id: 0, total: 1 } }
+    { $project: { _id: 0, total: 1 } }
   ], (err, list) => {
     if(err)
       res.send(err)
-    console.log(list)
+      res.json(list)
   })
 }
