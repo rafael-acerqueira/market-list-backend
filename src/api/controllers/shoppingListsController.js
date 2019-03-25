@@ -150,6 +150,7 @@ exports.valueMonthByMonth = (req, res) => {
       done: 1,
       total: {  $sum: "$items.value"}}
     },
+    { $sort : { month : -1 } },
     { $match: { done: { $eq: true }, year: new Date().getFullYear() } },
     { $group: { _id: {month: '$month'}, total: {$sum: '$total'} } }
   ], (err, list) => {
