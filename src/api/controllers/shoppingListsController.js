@@ -137,7 +137,7 @@ exports.totalValueThisMonth = (req, res) => {
   ], (err, list) => {
     if(err)
       res.send(err)
-      res.json(list)
+      res.json(list[0])
   })
 }
 
