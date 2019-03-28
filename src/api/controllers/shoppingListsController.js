@@ -92,6 +92,25 @@ exports.maskItemAsFound = (req, res) => {
   })
 }
 
+exports.productAverage = (req, res) => {
+  ShoppingList.find({ done: true }, async (err, shoppingList) => {
+    const shoppingListJSON = JSON.parse(JSON.stringify(shoppingList[0]))
+    const list = []
+    await Promise.all(shoppingListJSON.items.map(async element => {
+      let product = await Product.findById(element.product)
+      const productJSON = JSON.parse(JSON.stringify(product))
+      list.push({
+        _id: element._id,
+        productName: productJSON.name,
+        averageValue: (element.value/element.quantity).toFixed(2)
+      })
+      list.sort(compareByProductName)
+    }))
+    res.json(list)
+  }).sort({ date: -1 }).limit(1);
+  
+}
+
 exports.changeItemValue = (req, res) => {
   ShoppingList.findById( req.params.id, async (err, shoppingList) => {
     const item = shoppingList.items.id(req.params.item_id)
