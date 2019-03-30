@@ -102,6 +102,8 @@ exports.productAverage = (req, res) => {
       list.push({
         _id: element._id,
         productName: productJSON.name,
+        quantity: element.quantity,
+        value: element.value,
         averageValue: (element.value/element.quantity).toFixed(2)
       })
       list.sort(compareByProductName)
