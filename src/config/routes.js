@@ -34,6 +34,7 @@ module.exports = function (app) {
   router.get('/shopping-lists/nextBuy', shoppingLists.nextBuy)
   router.get('/shopping-lists/month-by-month', shoppingLists.valueMonthByMonth)
   router.get('/shopping-lists/product-average', shoppingLists.productAverage)
+  router.get('/shopping-lists/save-or-waste', shoppingLists.saveOrWaste)
   router.get('/shopping-lists/:id', shoppingLists.read)
   router.put('/shopping-lists/:id', shoppingLists.update)
   router.put('/shopping-lists/:id/items/:item_id', shoppingLists.maskItemAsFound)

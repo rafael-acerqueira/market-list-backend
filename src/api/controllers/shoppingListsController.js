@@ -178,3 +178,37 @@ exports.valueMonthByMonth = (req, res) => {
       res.json(list)
   })
 }
+
+exports.saveOrWaste = (req, res) => {
+  ShoppingList.aggregate([
+    { $project: { total: { $sum: "$items.value" }, month: { $month: '$date'}, done: '$done' } },
+    { $match: { done: { $eq: true }}},
+    { $group: {
+        _id: false,
+        currentMonth: {
+          $sum: {
+            $cond: [
+              { $eq: ['$month', new Date().getMonth() + 1 ]},
+              {$sum: '$total'},
+              0
+            ]
+          },
+        },
+        prevMonth: {
+          $sum: {
+            $cond: [
+              { $eq: ['$month', new Date().getMonth() ]},
+              {$sum: '$total'},
+              0
+            ]
+          },
+        },
+      }
+    },
+    { $project: { _id: 0, currentMonth: 1, prevMonth: 1, total: { $subtract: ['$currentMonth', '$prevMonth']} } }
+  ], (err, list) => {
+    if(err)
+      res.send(err)
+      res.json(list[0])
+  })
+}
