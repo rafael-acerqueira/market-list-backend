@@ -42,4 +42,7 @@ module.exports = function (app) {
   router.delete('/shopping-lists/:id', shoppingLists.delete)
   router.get('/shopping-lists/:month/purchase-quantity', shoppingLists.purchasesThisMonth)
   router.get('/shopping-lists/:month/total-value', shoppingLists.totalValueThisMonth)
+
+  var auth = require('../api/controllers/authController')
+  router.post('/login', auth.login)
 }
