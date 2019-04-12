@@ -1,6 +1,6 @@
 
 const mongoose = require('mongoose')
-module.exports = mongoose.connect(
-  'mongodb://localhost/marketlist',
-  { useNewUrlParser: true }
+const url = process.env.MONGODB_URI ? process.env.MONGODB_URI : 
+'mongodb://localhost/marketlist'
+module.exports = mongoose.connect(url, { useNewUrlParser: true }
 )
